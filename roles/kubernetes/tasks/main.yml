@@ -1,0 +1,33 @@
+- name: Disable SELinux
+  selinux:
+    policy: targeted
+    state: permissive
+
+- name: Add kubernetes yum key
+  rpm_key:
+    key: https://packages.cloud.google.com/yum/doc/yum-key.gpg
+
+- name: Add kubernetes rpm package key
+  yum_repository:
+    name: kubernetes
+    description: kubernetes repo
+    baseurl: https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
+    gpgkey: https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+    gpgcheck: yes
+
+- name: Install Kubernetes
+  yum:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+  with_items:
+    - kubelet
+    - kubectl
+    - kubeadm
+    - kubernetes-cni
+
+- name: Start kubelet
+  systemd:
+    name: kubelet
+    enabled: yes
+    state: started

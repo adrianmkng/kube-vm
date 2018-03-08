@@ -1,0 +1,12 @@
+---
+- hosts: all
+  become: yes
+  roles:
+    - docker
+    - kubernetes
+  tasks:
+    - name: Start kube master
+      shell: kubeadm init --apiserver-advertise-address=192.168.10.10
+
+    - name: Setup network add-on
+      shell: kubectl apply -f http://docs.projectcalico.org/v2.2/getting-started/kubernetes/installation/hosted/kubeadm/1.6/calico.yaml
